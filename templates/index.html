@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talent Corner Advisory</title>
+    <link rel="stylesheet" href="/static/style.css"> <!-- Link to the external CSS file -->
+</head>
+<body>
+    <!-- Chat Icon (clickable to open chat) -->
+    <div id="chat-icon" class="chat-icon">
+        💬
+    </div>
+
+    <!-- Chat Container (initially hidden) -->
+    <div id="chat-container" class="chat-container">
+        <div class="chat-header">
+            <p>👋 Hi! I'm TCA Assistant. How can I assist you today?</p>
+        </div>
+        <div id="quick-questions" class="quick-questions"></div>
+        <div id="chat-box" class="chat-box"></div>
+        <div class="chat-input">
+            <input id="userInput" type="text" placeholder="Type and press [Enter]..." onkeypress="handleInput(event)">
+        </div>
+    </div>
+
+    <script>
+        // JSON Configuration (unchanged)
+        const chatData = {
+            "questions": [
+                "What services does TCA provide?",
+                "What makes TCA different from others?",
+                "Tell me more about TCA's digital marketing strategies.",
+                "How can I contact TCA?"
+            ],
+            "responses": {
+                "What services does TCA provide?": "We provide personalized consulting services.",
+                "What makes TCA different from others?": "We focus on long-term relationships and customized solutions.",
+                "Tell me more about TCA's digital marketing strategies.": "Our strategies are data-driven and result-oriented.",
+                "How can I contact TCA?": "You can contact us at support@tca.com."
+            },
+            "defaultResponse": "I'm here to help. Let me know your query."
+        };
+
+        let questionCount = 0;
+
+        // Generate Quick Questions
+        const quickQuestionsContainer = document.getElementById('quick-questions');
+        chatData.questions.forEach(question => {
+            const button = document.createElement('button');
+            button.textContent = question;
+            button.onclick = () => askQuestion(question);
+            quickQuestionsContainer.appendChild(button);
+        });
+
+        // Append Chat Message
+        function appendMessage(sender, message) {
+            const chatBox = document.getElementById('chat-box');
+            const newMessage = document.createElement('p');
+            newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatBox.appendChild(newMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Handle Predefined Questions
+        function askQuestion(question) {
+            appendMessage('You', question);
+            const response = chatData.responses[question] || chatData.defaultResponse;
+            setTimeout(() => appendMessage('TCA Assistant', response), 500);
+
+            // Increment question count
+            questionCount++;
+            if (questionCount === 3) {
+                setTimeout(() => {
+                    appendMessage('TCA Assistant', "I’d love to help further! Could you please provide your email so we can assist you better?");
+                }, 1000);
+            }
+        }
+
+        // Handle User Input
+        function handleInput(event) {
+            if (event.key === 'Enter') {
+                const userInput = document.getElementById('userInput');
+                const message = userInput.value.trim();
+                if (message) {
+                    appendMessage('You', message);
+                    userInput.value = '';
+                    if (questionCount >= 3) {
+                        appendMessage('TCA Assistant', "Thank you! We’ll reach out to you shortly.");
+                    } else {
+                        setTimeout(() => {
+                            appendMessage('TCA Assistant', chatData.defaultResponse);
+                        }, 500);
+                    }
+                }
+            }
+        }
+
+        // Toggle Chatbox visibility when clicking the chat icon
+        document.getElementById('chat-icon').onclick = function() {
+            const chatContainer = document.getElementById('chat-container');
+            if (chatContainer.style.display === 'none' || !chatContainer.style.display) {
+                chatContainer.style.display = 'block';
+            } else {
+                chatContainer.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
